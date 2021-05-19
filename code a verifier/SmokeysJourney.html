@@ -485,28 +485,36 @@ function tirer(player) {
 }
 
 function shadowTP(player) {
-        var coefDir;
-	    if (player.direction == 'left') { coefDir = -1; } else { coefDir = 1 }
+        var coefDir2;
+        var bouttonAetePress = false;
+	    if (player.direction == 'left') { coefDir2 = -1; } else { coefDir2 = 1 }
         // on crée la balle a coté du joueur
-        var Tp = teleportation.create(player.x + (25 * coefDir), player.y + 10, 'Tp');
+        var Tp = teleportation.create(player.x + (25 * coefDir2), player.y + 10, 'Tp');
         // parametres physiques de la balle.
         Tp.setCollideWorldBounds(false);
         Tp.body.allowGravity = true;
-        while(boutonTp.isDown)
+        if(boutonTp.isDown)
         {
-            Tp.setVelocity(500 * coefDir); // vitesse en x et en y
+            Tp.setVelocity(500 * coefDir2); // vitesse en x et en y
             var coox = Tp.x;
             var cooy = Tp.y;
+            bouttonAetePress = true;
         }
+        
+        else if(boutonTp.isUp && bouttonAetePress == true)
+        {
             Tp.destroy();
             player.x = coox;
             player.y = cooy;
+        }
+           
         
         
 }
 
 function collideWall(Tp, platforms){
     Tp.destroy();
+   
 }    
     
 function hitWall(bdn, platforms){
