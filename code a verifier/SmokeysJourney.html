@@ -51,6 +51,9 @@
     var shadow = true;
     var teleportation;
     var boutonTp;
+    var bouttonAetePress = false;
+    
+
     
     
 //----------------------- PRELOAD -----------------------------------------------------------------------------------------------------------------------
@@ -388,6 +391,14 @@
                 shadowTP(player);
             }       
         }
+
+        if ( Phaser.Input.Keyboard.JustUp(boutonTp) && bouttonAetePress == true) {
+            if (shadow == true){
+                this.coox = this.Tp.x;
+                this.cooy = this.Tp.y;
+                shadowTPexecute(player, Tp, coox, cooy);
+            }       
+        }
         
         
     // ACTUALISATION DE LA VIE --------------------------------------------------
@@ -486,30 +497,30 @@ function tirer(player) {
 
 function shadowTP(player) {
         var coefDir2;
-        var bouttonAetePress = false;
+        
 	    if (player.direction == 'left') { coefDir2 = -1; } else { coefDir2 = 1 }
         // on crée la balle a coté du joueur
-        var Tp = teleportation.create(player.x + (25 * coefDir2), player.y + 10, 'Tp');
+        this.Tp = teleportation.create(player.x + (25 * coefDir2), player.y, 'Tp');
         // parametres physiques de la balle.
         Tp.setCollideWorldBounds(false);
         Tp.body.allowGravity = true;
         if(boutonTp.isDown)
         {
-            Tp.setVelocity(500 * coefDir2); // vitesse en x et en y
-            var coox = Tp.x;
-            var cooy = Tp.y;
+            this.Tp.setVelocity(500 * coefDir2); // vitesse en x et en y
             bouttonAetePress = true;
         }
         
-        else if(boutonTp.isUp && bouttonAetePress == true)
-        {
-            Tp.destroy();
-            player.x = coox;
-            player.y = cooy;
-        }
-           
         
         
+      
+}
+
+function shadowTPexecute(player, Tp, coox, cooy) {
+    
+    Tp.destroy();
+    player.x = coox;
+    player.y = cooy;
+
 }
 
 function collideWall(Tp, platforms){
