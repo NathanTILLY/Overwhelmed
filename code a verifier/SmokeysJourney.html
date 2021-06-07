@@ -53,8 +53,6 @@
     var boutonTp;
     var bouttonAetePress = false;
     
-
-    
     
 //----------------------- PRELOAD -----------------------------------------------------------------------------------------------------------------------
     
@@ -336,14 +334,16 @@
    
         this.physics.add.overlap(player, ennemi5, hitEnnemi5, null, this);
         
-        this.physics.add.overlap(teleportation, platforms, collideWall, null, this);
+        
         this.physics.add.overlap(player, boule_de_neige, getBdn, null, this);
         this.physics.add.overlap(boule_de_neige, ennemi, null, this);
     }
 //----------------------- UPDATE -------------------------------------------------------------------------------------------------------------------------
     
     function update () {
-        if (cursors.left.isDown)  {
+        if(boutonTp.isUp)
+        {
+            if (cursors.left.isDown)  {
             player.direction = 'left';
             if (player.body.touching.down){
                 player.setVelocityX(-400);
@@ -355,31 +355,38 @@
                 player.setVelocityX(-600);
             }
             player.anims.play('left', true);
-        }
-        else if (cursors.right.isDown) {
-            player.direction = 'right';
-            if (player.body.touching.down){
-                player.setVelocityX(400); 
             }
-            else if (player.body.touching.grandePlateformeGlace){
-                player.setVelocityX(4000);
+            else if (cursors.right.isDown) {
+                player.direction = 'right';
+                if (player.body.touching.down){
+                    player.setVelocityX(400); 
+                }
+                else if (player.body.touching.grandePlateformeGlace){
+                    player.setVelocityX(4000);
+                }
+                else {
+                    player.setVelocityX(600);
+                }
+                player.anims.play('right', true);
             }
-            else {
-                player.setVelocityX(600);
+            else  {
+                player.setVelocityX(0);
+                player.anims.play('turn');
             }
-            player.anims.play('right', true);
+            if (cursors.up.isDown && player.body.touching.down) {
+                player.setVelocityY(-950);
+            }
+            if (cursors.down.isDown )
+            {
+                player.setVelocityY(900);
+            }
         }
-        else  {
-            player.setVelocityX(0);
-            player.anims.play('turn');
-        }
-        if (cursors.up.isDown && player.body.touching.down) {
-            player.setVelocityY(-950);
-        }
-        if (cursors.down.isDown )
+        else
         {
-            player.setVelocityY(900);
+            player.setVelocityX(0);
+            player.setVelocityY(400);
         }
+        
         if ( Phaser.Input.Keyboard.JustDown(boutonFeu)) {
             if (boule == true){
                 tirer(player);
@@ -394,8 +401,6 @@
 
         if ( Phaser.Input.Keyboard.JustUp(boutonTp) && bouttonAetePress == true) {
             if (shadow == true){
-                this.coox = this.Tp.x;
-                this.cooy = this.Tp.y;
                 shadowTPexecute(player, Tp, coox, cooy);
             }       
         }
@@ -418,6 +423,14 @@
     
     else if (vie == 0){
         this.add.image(960, 540, 'game_over').setScrollFactor(0);
+    }
+
+    if(vie <= 0){
+        this.add.image(960, 540, 'game_over').setScrollFactor(0);
+        player.setTint(0xff0000);
+        player.anims.play('turn');//mettre une anime ou il tombe en avant
+        this.physics.pause();
+        gameOver = true;
     }
         
         // AJOUT CONTROLES MANETTE --------------------------------------------------
@@ -499,35 +512,29 @@ function shadowTP(player) {
         var coefDir2;
         
 	    if (player.direction == 'left') { coefDir2 = -1; } else { coefDir2 = 1 }
-        // on crée la balle a coté du joueur
+        // on crée la tp a coté du joueur
         this.Tp = teleportation.create(player.x + (25 * coefDir2), player.y, 'Tp');
         // parametres physiques de la balle.
         Tp.setCollideWorldBounds(false);
-        Tp.body.allowGravity = true;
+        Tp.body.allowGravity = false;
         if(boutonTp.isDown)
         {
             this.Tp.setVelocity(500 * coefDir2); // vitesse en x et en y
             bouttonAetePress = true;
         }
-        
-        
-        
-      
+        this.coox = this.Tp.x;
+        this.cooy = this.Tp.y;
 }
 
 function shadowTPexecute(player, Tp, coox, cooy) {
     
     Tp.destroy();
-    player.x = coox;
-    player.y = cooy;
+    player.x = Tp.x;
+    player.y = (Tp.y-20);
+    
 
 }
 
-function collideWall(Tp, platforms){
-    Tp.destroy();
-   
-}    
-    
 function hitWall(bdn, platforms){
     bdn.destroy();
 }    
@@ -558,13 +565,7 @@ function hitEnnemi (player, ennemi)
 
     player.anims.play('turn');
     
-    if(vie == 0){
-        this.add.image(960, 140, 'game_over').setScrollFactor(0);
-        player.setTint(0xff0000);
-        player.anims.play('turn');
-        this.physics.pause();
-        gameOver = true;
-    }
+    
 
 }
     
@@ -584,19 +585,9 @@ function hitEnnemi2 (player, ennemi2)
 
     player.anims.play('turn');
     
-    if(vie == 0){
-        this.add.image(960, 540, 'game_over').setScrollFactor(0);
-        player.setTint(0xff0000);
-        player.anims.play('turn');
-        this.physics.pause();
-        gameOver = true;
-    }
-
-}
     
 
-
-  
+}
 
 function hitEnnemi5 (player, ennemi5)
 {
@@ -614,13 +605,7 @@ function hitEnnemi5 (player, ennemi5)
 
     player.anims.play('turn');
     
-    if(vie == 0){
-        this.add.image(960, 540, 'game_over').setScrollFactor(0);
-        player.setTint(0xff0000);
-        player.anims.play('turn');
-        this.physics.pause();
-        gameOver = true;
-    }
+    
 
 }
     
@@ -631,15 +616,11 @@ function hitTortue (player, tortue)
 
     player.anims.play('turn');
     
-    if(vie <= 0){
-        this.add.image(960, 540, 'game_over').setScrollFactor(0);
-        player.setTint(0xff0000);
-        player.anims.play('turn');
-        this.physics.pause();
-        gameOver = true;
-    }
+    
 
 }    
+
+
     
 </script>
 
