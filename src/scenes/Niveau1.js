@@ -6,11 +6,7 @@ export default class Niveau1 extends Phaser.Scene
     {
         super('niveau1');
     }
-    init(data){
-        this.entryDungeon = data.entryDungeon
-		this.attack = data.attack
-		this.life = data.health
-	}
+    
 
     //---------------------------------------------------------------------- VARIABLES ----------------------------------------------------------------------
     
@@ -19,346 +15,566 @@ export default class Niveau1 extends Phaser.Scene
 
     preload ()
     {
-
-
-        this.load.image('Tileset', 'assets/monTilesetDeTest_32x32.png');
-
-        this.load.tilemapTiledJSON('Map', 'MapTest.json');
-
-        this.load.image('Pdv', 'assets/Pdv.png');
-        this.load.image('PdvPerdu', 'assets/PdvPerdu.png');
-        this.load.image('MonstreBleu', 'assets/monstres/monstreBleu.png');
-        this.load.image('swordD', 'assets/sword/swordD.png');
-        this.load.image('swordL', 'assets/sword/swordL.png');
-        this.load.image('swordR', 'assets/sword/swordR.png');
-        this.load.image('swordU', 'assets/sword/swordU.png');
-        this.load.image('Thune','assets/Argent.png')
-
-        this.load.image('bordure','assets/Bordure.png')
-
-        this.load.image('sword','assets/Pdv.png')
+        this.load.image('bordure', 'assets/lasNoches/bordure2.png');
         
-        this.load.spritesheet('monstrePhantom', 'assets/monstres/monstrePhantom.png', { frameWidth: 22, frameHeight: 26 }); 
-        this.load.spritesheet('chevalier', 'assets/chevalier.png', { frameWidth: 26, frameHeight: 31 }); // 26 ; 31 chevalier 64 ; 94 chevalier
-        this.cursors = this.input.keyboard.createCursorKeys()
-		this.boutonAttaque = this.input.keyboard.addKey('E');
+        //plateformes
+        this.load.image('arbreGeant', 'assets/lasNoches/plateformes/arbreGeant.png');
+        this.load.image('petitePlateforme', 'assets/lasNoches/plateformes/petitePlateforme.png');
+        this.load.image('moyennePlateforme', 'assets/lasNoches/plateformes/moyennePlateforme.png');
+        this.load.image('grandePlateforme', 'assets/lasNoches/plateformes/grandePlateforme.png');
+        this.load.image('petitePlateformeGlace', 'assets/lasNoches/plateformes/petitePlateformeGlace.png');
+        this.load.image('moyennePlateformeGlace', 'assets/lasNoches/plateformes/moyennePlateformeGlace.png');
+        this.load.image('grandePlateformeGlace', 'assets/lasNoches/plateformes/grandePlateformeGlace.png');
+        this.load.image('paroiRocailleuse', 'assets/lasNoches/plateformes/paroiRocailleuse.png');
+        this.load.image('game_over', 'assets/lasNoches/game_over.png');
+        this.load.image('victoire', 'assets/lasNoches/victoire.png');
+        
+        this.load.image('tortueGlace', 'assets/lasNoches/tortueGlace.png');
+        
+        
+        this.load.image('ciel', 'assets/lasNoches/ciel.png');
+        this.load.image('sol', 'assets/lasNoches/sol.png');
+        this.load.image('arbres', 'assets/lasNoches/arbres.png');
+        this.load.image('montagne', 'assets/lasNoches/montagne.png');
+        this.load.image('pdv1', 'assets/lasNoches/pointDeVie1.png');
+        this.load.image('pdv2', 'assets/lasNoches/pointDeVie2.png');
+        this.load.image('pdv3', 'assets/lasNoches/pointDeVie3.png');
+        this.load.spritesheet('ours', 'assets/lasNoches/ours.png', { frameWidth: 64, frameHeight: 94 });
+        this.load.spritesheet('ennemi', 'assets/lasNoches/ennemi.png', { frameWidth: 64, frameHeight: 94 });
+      
+        
+        this.load.image('bdn', 'assets/lasNoches/bdn.png');
+        this.load.image('boule_de_neige', 'assets/lasNoches/bouleDeNeigeItem.png');
+        this.load.image('ceinture', 'assets/lasNoches/ceinture.png');
+
+
+        this.load.image('Tp', 'assets/lasNoches/shadow.png')
     }
 
     //----------------------- CREATE -------------------------------------------------------------------------------------------------------------------------
 
     create ()
     {
+       //---------------------------------------------------------------------- BACKGROUND ----------------------------------------------------------------------
+       this.add.image(4500, 1080, 'ciel').setScrollFactor(0.20,1);
+       this.add.image(4500, 1275, 'montagne').setScrollFactor(0.30,1);
+       this.add.image(4500, 1275, 'arbres').setScrollFactor(0.70,1);
+
+ //---------------------------------------------------------------------- PLATEFORMES ----------------------------------------------------------------------
        
-        this.immunity = true
-        
-        //Vie
-        if (this.life == 3){
-			this.pdv1 = this.add.image(40,50,'Pdv').setScale(2).setScrollFactor(0).setDepth(3);
-			this.pdv2 = this.add.image(85,50,'Pdv').setScale(2).setScrollFactor(0).setDepth(3);
-			this.pdv3 = this.add.image(130,50,'Pdv').setScale(2).setScrollFactor(0).setDepth(3);
-		}
+       
+       this.platforms = this.physics.add.staticGroup();
 
-		else if (this.life == 2){
-			this.pdv1 = this.add.image(40,50,'Pdv').setScale(2).setScrollFactor(0).setDepth(3);
-			this.pdv2 = this.add.image(92,50,'Pdv').setScale(2).setScrollFactor(0).setDepth(3);
-            this.pdvDead = this.add.image(145,45,'PdvPerdu').setScale(2).setScrollFactor(0).setDepth(3);
-		}
-		else if (this.life == 1){
-			this.pdv1 = this.add.image(40,50,'Pdv').setScale(2).setScrollFactor(0).setDepth(3);
-            this.pdvDead = this.add.image(92,45,'PdvPerdu').setScale(2).setScrollFactor(0).setDepth(3);
-            this.pdvDead = this.add.image(165,45,'PdvPerdu').setScale(2).setScrollFactor(0).setDepth(3);
-		}
+       this.platforms.create(4500, 2160, 'sol');
+       this.platforms.create(9006, 1080, 'bordure');
+       
+       //platforms.create(400, 700, 'ground').setScale(6).refreshBody();
 
-        let Village = this.make.tilemap({key:'Map'});
+       
+       this.platforms.create(3040, 1225, 'arbreGeant');
+       this.platforms.create(6900, 1225, 'arbreGeant');
+       this.platforms.create(2450, 1750, 'moyennePlateforme');
+       this.platforms.create(1800, 1525, 'petitePlateforme');
+       this.platforms.create(645, 1275, 'grandePlateforme');
+       this.platforms.create(1800, 1025 , 'petitePlateforme');
+       this.platforms.create(2450, 775, 'petitePlateforme');
+       this.platforms.create(750, 575, 'petitePlateforme');
+       this.platforms.create(200, 300, 'petitePlateforme');
+       this.platforms.create(5000, 500, 'paroiRocailleuse').setScale(1);
+       this.platforms.create(5000, 1100, 'paroiRocailleuse').setScale(1);
+       
+       this.platforms.create(1450, 775, 'moyennePlateforme');
+       
+       this.platforms.create(3900, 1575, 'moyennePlateformeGlace');
+       this.platforms.create(3562, 575, 'petitePlateformeGlace');
+       this.platforms.create(4350, 975, 'grandePlateformeGlace');
+       
+       this.platforms.create(6562, 575, 'petitePlateformeGlace');
+       this.platforms.create(6000, 975, 'petitePlateformeGlace');
+       this.platforms.create(5362, 1375, 'petitePlateformeGlace');
+       this.platforms.create(6000, 1705, 'petitePlateformeGlace');
 
-        let Terrain = Village.addTilesetImage('monTilesetDeTest_32x32','Tileset');
+ //---------------------------------------------------------------------- PLAYER ----------------------------------------------------------------------
+       
+    this.player = this.physics.add.sprite(100, 1910, 'ours');
+    this.player.direction = 'right';
+    this.player.setBounce(0);
+    this.player.setCollideWorldBounds(true);
+       
+    this.hp = this.add.image(175,900, "pdv3").setScrollFactor(0);
+ //---------------------------------------------------------------------- ENNEMI ----------------------------------------------------------------------
+       
+ this.ennemi = this.physics.add.sprite(1200, 500, 'ennemi');
+ this.ennemi.direction = 'right';
+ this.ennemi.setBounce(0);
+ this.ennemi.setCollideWorldBounds(true);
+ this.ennemi.pointsVie=3; 
+ this.ennemi.setBounce(0);
+       
+ this.ennemi2 = this.physics.add.sprite(2200, 500, 'ennemi');
+ this.ennemi2.direction = 'right';
+ this.ennemi2.setBounce(0);
+ this.ennemi2.setCollideWorldBounds(true);
+ this.ennemi2.pointsVie=3; 
+ this.ennemi2.setBounce(0);
+       
+ this.tortue = this.physics.add.group({
+       key : 'tortue',
+       repeat: 0
+       
+       });
 
-        let Background = Village.createLayer('background', Terrain, 0, 0).setDepth(-2);
-        
-        let Layer1 = Village.createLayer('plateformes', Terrain, 0, 0).setDepth(-1);
-        this.cursors = this.input.keyboard.createCursorKeys();
+var tortue1 = this.tortue.create(1800, 550, 'tortueGlace').setScale(2);
+var tortue2 = this.tortue.create(6000, 1240, 'tortueGlace').setScale(2);
+var tortue3 = this.tortue.create(1200, 3000, 'tortueGlace').setScale(2);
+       
+       
+       
+       
+this.ennemi5 = this.physics.add.sprite(5200, 500, 'ennemi');
+this.ennemi5.direction = 'right';
+this.ennemi5.setBounce(0);
+this.ennemi5.setCollideWorldBounds(true);
+this.ennemi5.pointsVie=3; 
+this.ennemi5.setBounce(0);
+       
 
-        //--COLLIDER------------------------------------------------------------------------------------------------------------------------------------- 
-        //---------------------------------------------------------------------- MONSTER----------------------------------------------------------------------
-        this.monster = this.physics.add.sprite(544,480,'MonstreBleu').setDepth(0);
-		this.monster1 = this.physics.add.sprite(1728,640,'MonstreBleu').setDepth(0);
-		this.monster2 = this.physics.add.sprite(1152,928,'MonstreBleu').setDepth(0);
+       
+  //---------------------------------------------------------------------- CAMERA ----------------------------------------------------------------------        
+       
 
-        //---------------------------------------------------------------------- PLAYER ----------------------------------------------------------------------
-            
-            
-            if(!this.entryDungeon)
-            {
-                this.player = this.physics.add.sprite(1130, 1100, 'chevalier');
-            }
-            else
-            {
-                this.player = this.physics.add.sprite(210, 100, 'chevalier');
-            }
-            this.sword = this.physics.add.image(1530, 64, 'sword');
-            this.player.direction = 'right';
-            this.player.setBounce(0);
-            this.player.setCollideWorldBounds(true);
+this.cameras.main.setSize(1920, 1080);
+this.cameras.main.setBounds(0, 0, 9000, 3283)
+this.cameras.main.startFollow(this.player);
+       
+       
+       
 
-            this.dungeonborder = this.physics.add.staticGroup();
-		    this.dungeonborder.create(210,32,'bordure').setDepth(0);
+       
+ //---------------------------------------------------------------------- ANIMS ----------------------------------------------------------------------   
+       
+       this.anims.create({
+           key: 'left',
+           frames: this.anims.generateFrameNumbers('ours', { start: 0, end: 3 }),
+           frameRate: 10,
+           repeat: 1
+       });
 
-            this.physics.add.collider(this.player, this.dungeonborder, this.warpingPlayerToDungeon, null, this);
+       this.anims.create({
+           key: 'turn',
+           frames: [ { key: 'ours', frame: 4 } ],
+           frameRate: 20
+       });
 
-            this.physics.add.collider(this.player, Background);
+       this.anims.create({
+           key: 'right',
+           frames: this.anims.generateFrameNumbers('ours', { start: 5, end: 8 }),
+           frameRate: 11,
+           repeat: 1
+       });
+       
+       // ----------------ennemi
+       
+       this.anims.create({
+           key: 'ennemileft',
+           frames: this.anims.generateFrameNumbers('ennemi', { start: 0, end: 3 }),
+           frameRate: 10,
+           repeat: 13
+       });
 
-            Background.setCollisionByProperty({collide:false});
+       this.anims.create({
+           key: 'ennemiturn',
+           frames: [ { key: 'ennemi', frame: 4 } ],
+           frameRate: 2
+       });
 
-            this.physics.add.collider(this.player, Background2);
-            
-            Background2.setCollisionByProperty({collide:false});
+       this.anims.create({
+           key: 'ennemiright',
+           frames: this.anims.generateFrameNumbers('ennemi', { start: 5, end: 8 }),
+           frameRate: 11,
+           repeat: 17
+       });
+       
+       var tween = this.tweens.add({
+       targets: this.ennemi,
+       x: 500,
+       duration: 5000,
+       yoyo: true,
+       repeat: -1,
+       onStart: function () { console.log('onStart'); console.log(arguments); this.ennemi.anims.play('ennemileft', true); },
+       onComplete: function () { console.log('onComplete'); console.log(arguments);this.ennemi.anims.play('ennemileft', true); },
+       onYoyo: function () { console.log('onYoyo'); console.log(arguments);this.ennemi.anims.play('ennemiright', true); },
+       onRepeat: function () { console.log('onRepeat'); console.log(arguments);this.ennemi.anims.play('ennemiturn', true);ennemi.anims.play('ennemileft', true); },
+       });
+       
+       var tween2 = this.tweens.add({
+       targets: this.ennemi2,
+       x: 1000,
+       duration: 5000,
+       yoyo: true,
+       repeat: -1,
+       onStart: function () { console.log('onStart'); console.log(arguments); ennemi2.anims.play('ennemileft', true); },
+       onComplete: function () { console.log('onComplete'); console.log(arguments);ennemi2.anims.play('ennemileft', true); },
+       onYoyo: function () { console.log('onYoyo'); console.log(arguments);ennemi2.anims.play('ennemiright', true); },
+       onRepeat: function () { console.log('onRepeat'); console.log(arguments);ennemi2.anims.play('ennemiturn', true);ennemi2.anims.play('ennemileft', true); },
+       });
+       
+      
+       
+       var tween5 = this.tweens.add({
+       targets: this.ennemi5,
+       x: 4000,
+       duration: 5000,
+       yoyo: true,
+       repeat: -1,
+       onStart: function () { console.log('onStart'); console.log(arguments); ennemi5.anims.play('ennemileft', true); },
+       onComplete: function () { console.log('onComplete'); console.log(arguments);ennemi5.anims.play('ennemileft', true); },
+       onYoyo: function () { console.log('onYoyo'); console.log(arguments);ennemi5.anims.play('ennemiright', true); },
+       onRepeat: function () { console.log('onRepeat'); console.log(arguments);ennemi5.anims.play('ennemiturn', true);ennemi5.anims.play('ennemileft', true); },
+       });
 
-            this.physics.add.collider(this.player, Layer1);
-            
-            Layer1.setCollisionByProperty({collide:true});
+       
+ //---------------------------------------------------------------------- Boule de neige ----------------------------------------------------------------------
+   
+    this.boule_de_neige = this.physics.add.group({
+       key : 'boule_de_neige',
+       repeat : 0,
+       setXY: {x:150, y: 0}
+   });    
+       
+    this.ceinture = this.physics.add.group({
+       key : 'ceinture',
+       repeat : 0,
+       setXY: {x:8000, y: 0}
+   }); 
+       
+   this.groupeBdn = this.physics.add.group();
+   this.cursors = this.input.keyboard.createCursorKeys();
+   this.boutonFeu = this.input.keyboard.addKey('A');
 
-            this.physics.add.collider(this.player, this.sword, this.getSword, null, this);
-        //---------------------------------------------------------------------- LE RESTE -------------------------------------------------------------------
-            this.Argents = this.physics.add.group();
-            this.sword = this.physics.add.group();
-        //---------------------------------------------------------------------- ANIMS ----------------------------------------------------------------------   
-            
-            this.anims.create({
-                key: 'left',
-                frames: this.anims.generateFrameNumbers('chevalier', { start: 0, end: 2 }),
-                frameRate: 10,
-               
-            });
+   this.boutonTp = this.input.keyboard.addKey('E');
 
-            this.anims.create({
-                key: 'right',
-                frames: this.anims.generateFrameNumbers('chevalier', { start: 9, end: 11 }),
-                frameRate: 10,
-               
-            });
+   this.teleportation = this.physics.add.group();
+ //---------------------------------------------------------------------- COLLIDER ----------------------------------------------------------------------
+       
+       this.physics.add.collider(this.player, this.platforms);
+       this.physics.add.collider(this.ennemi, this.platforms);
+       this.physics.add.collider(this.ennemi2, this.platforms);
+       this.physics.add.collider(this.tortue, this.platforms);
+      
+      
+       this.physics.add.collider(this.ennemi5, this.platforms);
+       this.physics.add.collider(this.boule_de_neige, this.platforms);
+       this.physics.add.collider(this.ceinture, this.platforms);
+       this.physics.add.collider(this.groupeBdn, this.ennemi, this.hit);
+       this.physics.add.collider(this.groupeBdn, this.ennemi2, this.hit);
+  
+     
+       this.physics.add.collider(this.groupeBdn, this.ennemi5, this.hit);
+       
 
-            this.anims.create({
-                key: 'up',
-                frames: this.anims.generateFrameNumbers('chevalier', { start: 3, end: 5 }),
-                frameRate: 10,
-               
-            });
-            this.anims.create({
-                key: 'down',
-                frames: this.anims.generateFrameNumbers('chevalier', { start: 6, end: 8 }),
-                frameRate: 10,
-             
-            });
+       this.physics.add.collider(this.teleportation, this.platforms);
+   
+       
+ //---------------------------------------------------------------------- OVERLAP ----------------------------------------------------------------------
+       
+       this.physics.add.overlap(this.groupeBdn, this.platforms, this.hitWall, null, this);
+       this.physics.add.overlap(this.player, this.boule_de_neige, this.getBdn, null, this);
+       this.physics.add.overlap(this.player, this.ceinture, this.getCeinture, null, this);
+       this.physics.add.overlap(this.groupeBdn, this.ennemi, this.hit, null,this);
+       this.physics.add.overlap(this.groupeBdn, this.ennemi2, this.hit, null,this);
+       this.physics.add.overlap(this.player, this.tortue, this.hitTortue, null, this);
 
-            this.anims.create({
-                key: 'attackr',
-                frames: [ { key: 'swordR', frame: 0 } ],
-                frameRate: 10
-            });
-    
-            this.anims.create({
-                key: 'attackl',
-                frames: [ { key: 'swordL', frame: 0 } ],
-                frameRate: 8
-            });
-    
-            this.anims.create({
-                key: 'attacku',
-                frames: [ { key: 'swordU', frame: 0 } ],
-                frameRate: 8
-            });
-            this.anims.create({
-                key: 'attackd',
-                frames: [ { key: 'swordD', frame: 0 } ],
-                frameRate: 8
-            });
-
-
-            
-    
-            //Overlaps
-            this.physics.add.overlap(this.player, this.monster, this.hitEnnemy, null, this);
-            this.physics.add.overlap(this.player, this.monster1, this.hitEnnemy, null, this);
-            this.physics.add.overlap(this.player, this.monster2, this.hitEnnemy, null, this);
-            this.physics.add.overlap(this.sword, this.monster1, this.killMonster, null,this);
-            this.physics.add.overlap(this.sword, this.monster2, this.killMonster, null,this);
-            this.physics.add.overlap(this.sword, this.monster, this.killMonster, null,this);
-            this.physics.add.overlap(this.player, this.Argents, this.ARGENT, null,this);
-            this.physics.add.overlap(this.player, this.sword, this.getSword, null, this);
-            
-    /*sert à highlight les hitboxes
-            const debugGraphics = this.add.graphics().setAlpha(0.75);
-            Background.renderDebug(debugGraphics, {
-                  tileColor: null, // Color of non-colliding tiles
-                  collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-                  faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-            });
-            Layer1.renderDebug(debugGraphics, {
-                tileColor: null, // Color of non-colliding tiles
-                collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
-                faceColor: new Phaser.Display.Color(40, 39, 37, 255) // Color of colliding face edges
-              });
-      */      
-        
-        //camera
-        this.cameras.main.startFollow(this.player);
-        this.cameras.main.setBounds(0,0,Village.widthInPixels, Village.heightInPixels);
-        this.physics.world.setBounds(0,0, Village.widthInPixels, Village.heightInPixels);
-        this.player.setCollideWorldBounds(true);
-
-         //Controller
-
-        this.paddleConnected=false;
-
-        this.input.gamepad.once('connected', function (pad) {
-            this.paddleConnected = true;
-            paddle = pad;
-            });
-
-    }
+       this.physics.add.overlap(this.groupeBdn, this.ennemi5, this.hit, null,this);
+       this.physics.add.overlap(this.boule_de_neige, this.ennemi, null, this);
+       this.physics.add.overlap(this.player, this.ennemi, this.hitEnnemi, null, this);
+       this.physics.add.overlap(this.player, this.ennemi2, this.hitEnnemi2, null, this);
+       
+  
+       this.physics.add.overlap(this.player, this.ennemi5, this.hitEnnemi5, null, this);
+       
+       
+       this.physics.add.overlap(this.player, this.boule_de_neige, this.getBdn, null, this);
+       this.physics.add.overlap(this.boule_de_neige, this.ennemi, null, this);
+   }
     //----------------------- UPDATE -------------------------------------------------------------------------------------------------------------------------
     update (t,dt)
     {
-        const speed = 275;
-
-        if (!this.player)
-		{
-			return
-		}
-
-        this.player.setVelocity(0)
-		
-
-        if (this.paddleConnected == true)
-    	{
-
-        	if (paddle.right)
-        	{
-            	this.player.setVelocityX(speed);
-            	this.player.anims.play('right', true);
-        	}
-        	else if (paddle.left)
-        	{
-            	this.player.setVelocityX(-speed);
-            	this.player.anims.play('left', true);
-        	}
-            else if (paddle.up)
-        	{
-            	this.player.setVelocityY(-speed);
-            	this.player.anims.play('up', true);
-        	}
-            else if (paddle.down)
-        	{
-            	this.player.setVelocityY(speed);
-            	this.player.anims.play('down', true);
-        	}
-
-			if (this.attack && paddle.A){
-				this.attaquer(this.player);
-			}
-
-		}
-
-		else if (this.cursors.up.isDown)
-		{
-			this.player.direction='up';
-			this.player.setVelocityY(-speed)
-			this.player.anims.play('up', true);
-		}
-
-
-		else if (this.cursors.left.isDown)
-		{
-			this.player.direction='left';
-            this.player.setVelocityX(-speed)
-			this.player.anims.play('left', true)
-		}
-
-		else if (this.cursors.right.isDown)
-		{
-			this.player.direction='right';
-            this.player.setVelocityX(speed)
-			this.player.anims.play('right', true)	
-		}
-        else if (this.cursors.down.isDown)
-		{
-			this.player.direction='down';
-            this.player.setVelocityY(speed)
-			this.player.anims.play('down', true)	
-		}	
-		
-		if (this.attack && Phaser.Input.Keyboard.JustDown(this.boutonAttaque)){
-			this.player.setVelocity(0)
-			this.attaquer(this.player);
-		}
-
+        if(boutonTp.isUp)
+        {
+            if (cursors.left.isDown)  {
+            player.direction = 'left';
+            if (player.body.touching.down){
+                player.setVelocityX(-400);
+            }
+            else if (player.body.touching.grandePlateformeGlace){
+                player.setVelocityX(-4000);
+            }
+            else {
+                player.setVelocityX(-600);
+            }
+            player.anims.play('left', true);
+            }
+            else if (cursors.right.isDown) {
+                player.direction = 'right';
+                if (player.body.touching.down){
+                    player.setVelocityX(400); 
+                }
+                else if (player.body.touching.grandePlateformeGlace){
+                    player.setVelocityX(4000);
+                }
+                else {
+                    player.setVelocityX(600);
+                }
+                player.anims.play('right', true);
+            }
+            else  {
+                player.setVelocityX(0);
+                player.anims.play('turn');
+            }
+            if (cursors.up.isDown && player.body.touching.down) {
+                player.setVelocityY(-950);
+            }
+            if (cursors.down.isDown )
+            {
+                player.setVelocityY(900);
+            }
+        }
+        else
+        {
+            player.setVelocityX(0);
+            player.setVelocityY(400);
+        }
         
+        if ( Phaser.Input.Keyboard.JustDown(boutonFeu)) {
+            if (boule == true){
+                tirer(player);
+            }       
+        }
 
-    }
-    warpingPlayerToDungeon(){
-		this.scene.start('dungeon', { health:this.life, attack:this.attack})
-	}
-    getSword(player, sword){
-        this.attack = true; 
-        this.time.addEvent({delay: 100, callback: function(){sword.destroy()}, callbackScope: this});;
+        if ( Phaser.Input.Keyboard.JustDown(boutonTp)) {
+            if (shadow == true){
+                shadowTP(player);
+            }       
+        }
+
+        if ( Phaser.Input.Keyboard.JustUp(boutonTp) && bouttonAetePress == true) {
+            if (shadow == true){
+                shadowTPexecute(player, Tp, coox, cooy);
+            }       
+        }
         
-    }
-    attaquer(player) {
-		var peutAttaquer = true
-        if (peutAttaquer)
-       {
-           var coefDirx = 0;
-           var coefDiry = 0;
-             peutAttaquer = false;
-             this.time.addEvent({delay: 300, callback: function(){peutAttaquer= true;}, callbackScope: this}); 
-	         if (this.player.direction == 'left') { coefDirx = -1; var sword = this.sword.create(player.x + (25 * coefDirx), player.y + (25 * coefDiry), 'swordL').setScale(1.25)} 
-             else if(this.player.direction == 'right') { coefDirx = 1; var sword = this.sword.create(player.x + (25 * coefDirx), player.y + (25 * coefDiry), 'swordR').setScale(1.25)} 
-			 else{coefDirx = 0}
+        
+        // ACTUALISATION DE LA VIE --------------------------------------------------
+        
+        if (vie == 3){
+        hp.setTexture("pdv3");
+            
+        }
+        else if (vie == 2){
+            hp.setTexture("pdv2" );
+            
+        }
+        
+        else if (vie == 1){
+            hp.setTexture("pdv1");
+        }
+        
+        else if (vie == 0){
+            this.add.image(960, 540, 'game_over').setScrollFactor(0);
+        }
 
-             if(this.player.direction == 'up') { coefDiry = -1; var sword = this.sword.create(player.x + (25 * coefDirx), player.y + (25 * coefDiry), 'swordU').setScale(1.25)} 
-             else if(this.player.direction == 'down') { coefDiry = 1; var sword = this.sword.create(player.x + (25 * coefDirx), player.y + (25 * coefDiry), 'swordD').setScale(1.25)} 
-			 else{coefDiry = 0}
+        if(vie <= 0){
+            this.add.image(960, 540, 'game_over').setScrollFactor(0);
+            player.setTint(0xff0000);
+            player.anims.play('turn');//mettre une anime ou il tombe en avant
+            this.physics.pause();
+            gameOver = true;
+        }
+            
+            // AJOUT CONTROLES MANETTE --------------------------------------------------
+        
+        this.input.gamepad.once('connected', function (pad) {
+        paddleConnected = true;
+        paddle = pad;
+        });
 
-             
-			 this.time.addEvent({delay: 300, callback: function(){sword.destroy()}, callbackScope: this});
+        if (paddleConnected == true)
+        {
+            if ((paddle.A && player.body.touching.down) || (paddle.up && player.body.touching.down))
+            {
+            player.setVelocityY(-1800);
+            }
+
+            else if (paddle.right )
+            {
+                player.direction = 'right';
+                player.setVelocityX(400);
+                player.anims.play('right', true);
+            }
+
+            
+
+            else if (paddle.left )
+            {   
+                player.direction = 'left';
+                player.setVelocityX(-400);
+                player.anims.play('left', true);
+            }
+
+            
+            
+            else if (paddle.down && !player.body.touching.down)
+                {
+                    player.setVelocityY(1800);
+                }
+            if (paddle.B){
+                if(boule == true){
+                tirer(player);
+                }
+            }
+            
         }
     }
-    killMonster(sword, monstres)
-    {
-		sword.destroy();
-		monstres.destroy();
-    	var argent = this.Argents.create(monstres.x,monstres.y,'Thune').setScale(0.5)
+    
+        
+ //----------------------- FONCTIONS -------------------------------------------------------------------------------------------------------------------------
+
+    getBdn(player, boule_de_neige){
+        boule_de_neige.disableBody(true, true);
+        boule = true;
+    }    
+    getCeinture(player, ceinture){
+        ceinture.disableBody(true, true);
+        boule = true;
+        this.add.image(960, 340, 'victoire').setScrollFactor(0);
+        player.setTint(0x008a1a);
+        player.anims.play('turn');
+        this.physics.pause();
+        gameOver = true;
+        
+    }  
+        
+    tirer(player) {
+            var coefDir;
+            if (player.direction == 'left') { coefDir = -1; } else { coefDir = 1 }
+            // on crée la balle a coté du joueur
+            var bdn = groupeBdn.create(player.x + (25 * coefDir), player.y - 4, 'bdn');
+            // parametres physiques de la balle.
+            bdn.setCollideWorldBounds(false);
+            bdn.body.allowGravity =true;
+            bdn.setVelocity(500 * coefDir, -400); // vitesse en x et en y
     }
-    ARGENT(player, argent)
-    {
-        argent.destroy();
+
+    shadowTP(player) {
+            var coefDir2;
+            
+            if (player.direction == 'left') { coefDir2 = -1; } else { coefDir2 = 1 }
+            // on crée la tp a coté du joueur
+            this.Tp = teleportation.create(player.x + (25 * coefDir2), player.y, 'Tp');
+            // parametres physiques de la balle.
+            Tp.setCollideWorldBounds(false);
+            Tp.body.allowGravity = false;
+            if(boutonTp.isDown)
+            {
+                this.Tp.setVelocity(500 * coefDir2); // vitesse en x et en y
+                bouttonAetePress = true;
+            }
+            this.coox = this.Tp.x;
+            this.cooy = this.Tp.y;
     }
-    hitEnnemy(){
-		if (this.immunity){
-			this.life -= 1;
-			this.immunity = false;
-			
-			if(this.life > 0){
-				this.effect = this.time.addEvent({ delay : 200, repeat: 9, callback: function(){this.player.visible = !this.player.visible;}, callbackScope: this});
-			}
 
-			this.ImmuneFrame = this.time.addEvent({ delay : 2000, callback: function(){this.immunity = true}, callbackScope: this});
-			
-		}
-		if (this.life == 2){
-			this.effect = this.time.addEvent({ delay : 200, repeat: 9, callback: function(){this.pdv3.visible = !this.pdv3.visible;}, callbackScope: this});
-			this.pdv3.destroy();
-            this.add.image(165,45,'PdvPerdu').setScale(2).setScrollFactor(0).setDepth(3)
+    shadowTPexecute(player, Tp, coox, cooy) {
+        
+        Tp.destroy();
+        player.x = Tp.x;
+        player.y = (Tp.y-20);
+        
 
-		}
-		if (this.life == 1){
-			this.effect = this.time.addEvent({ delay : 200, repeat: 9, callback: function(){this.pdv2.visible = !this.pdv2.visible;}, callbackScope: this});
-			this.pdv2.destroy();
-            this.add.image(92,45,'PdvPerdu').setScale(2).setScrollFactor(0).setDepth(3)
-		}
+    }
 
-		if(this.life == 0){
-			this.scene.start('game-over')
-		}
-	}
+    hitWall(bdn, platforms){
+        bdn.destroy();
+    }    
+
+    hit (bdn, ennemi) {
+        bdn.destroy();
+        ennemi.pointsVie--;
+        if (ennemi.pointsVie==0) {
+            ennemi.destroy();
+        }
+    }
+
+        //  PERTE DE VIE  --------------------------------------------------
+        
+    hitEnnemi (player, ennemi)
+    {
+        if (!invincibilite){
+            vie -= 1;
+            invincibilite = true;
+            
+            if(vie > 0){
+                clignotement = this.time.addEvent({ delay : 200, repeat: 7, callback: function(){player.visible = !player.visible;}, callbackScope: this});
+            }
+            
+            tempsInvincibilite = this.time.addEvent({ delay : 2000, callback: function(){invincibilite = false}, callbackScope: this});
+        }
+    
+
+        player.anims.play('turn');
+        
+        
+
+    }
+        
+    hitEnnemi2 (player, ennemi2)
+    {
+        if (!invincibilite){
+            vie -= 1;
+            invincibilite = true;
+            
+            if(vie > 0){
+                clignotement = this.time.addEvent({ delay : 200, repeat: 7, callback: function(){player.visible = !player.visible;}, callbackScope: this});
+            }
+            
+            tempsInvincibilite = this.time.addEvent({ delay : 2000, callback: function(){invincibilite = false}, callbackScope: this});
+        }
+    
+
+        player.anims.play('turn');
+        
+        
+
+    }
+
+    hitEnnemi5 (player, ennemi5)
+    {
+        if (!invincibilite){
+            vie -= 1;
+            invincibilite = true;
+            
+            if(vie > 0){
+                clignotement = this.time.addEvent({ delay : 200, repeat: 7, callback: function(){player.visible = !player.visible;}, callbackScope: this});
+            }
+            
+            tempsInvincibilite = this.time.addEvent({ delay : 2000, callback: function(){invincibilite = false}, callbackScope: this});
+        }
+    
+
+        player.anims.play('turn');
+        
+        
+
+    }
+        
+    hitTortue (player, tortue)
+    {
+        
+        vie -= 3;
+
+        player.anims.play('turn');
+        
+        
+
+    }    
 }

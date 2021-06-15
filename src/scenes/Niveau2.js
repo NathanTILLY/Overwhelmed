@@ -1,10 +1,10 @@
 import Phaser from '../lib/phaser.js'
 
-export default class Niveau1 extends Phaser.Scene
+export default class Niveau2 extends Phaser.Scene
 {
     constructor()
     {
-        super('niveau1');
+        super('niveau2');
     }
     init(data){
         this.entryDungeon = data.entryDungeon
