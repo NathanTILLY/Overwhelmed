@@ -32,7 +32,7 @@ export default class Niveau1 extends Phaser.Scene
         this.load.image('tortueGlace', 'assets/lasNoches/tortueGlace.png');
         
         
-        this.load.image('ciel', 'assets/lasNoches/ciel.png');
+        this.load.image('ciel', 'codeAverifier/assets/ciel.png');
         this.load.image('sol', 'assets/lasNoches/sol.png');
         this.load.image('arbres', 'assets/lasNoches/arbres.png');
         this.load.image('montagne', 'assets/lasNoches/montagne.png');
