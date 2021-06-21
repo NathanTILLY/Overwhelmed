@@ -12,13 +12,11 @@ export default new Phaser.Game({
     height: 448,
     scene: [Menu, Controles, Niveau1, Niveau2, Niveau3],
     physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: {
-                y: 0
-            }
-          
-        }
+        default: "arcade",
+    arcade: {
+      gravity: { y: 1000 },
+      debug: true
+    }
     }
     
 })
