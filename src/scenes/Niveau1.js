@@ -58,7 +58,7 @@ export default class Niveau1 extends Phaser.Scene
         var boutonFeu;
         var boule = false;
         var boule_de_neige;
-        var vie = 3;
+        this.vie = 3;
         var invincibilite = false;
 
         var shadow = true;
@@ -97,7 +97,19 @@ export default class Niveau1 extends Phaser.Scene
        ciel.alpha = 0.8;
 
        //interface
-       this.hp = this.add.image(135,35, "pdv2").setScrollFactor(0);
+       var ring = this.add.image(335,35, "ring").setScale(0.7).setScrollFactor(0);
+       ring.alpha = 0.2;
+       //Vie
+       if (this.vie == 3){
+        this.hp = this.add.image(135,35, "pdv3").setScrollFactor(0);
+      }
+  
+      else if (this.vie == 2){
+        this.hp = this.add.image(135,35, "pdv2").setScrollFactor(0);;
+      }
+      else if (this.vie == 1){
+        this.hp = this.add.image(135,35, "pdv1").setScrollFactor(0);
+      }
        var barre = this.add.image(449, 224, 'interface').setScrollFactor(0);
        barre.alpha = 0.20;
 
@@ -117,6 +129,9 @@ export default class Niveau1 extends Phaser.Scene
         const Actionner1 = Map.findObject("Actionners", obj => obj.name === "Actionner 1")
         this.CheckPoint = Map.findObject("Objects", obj => obj.name === "Checkpoint")
         const Finish = Map.findObject("Objects", obj => obj.name === "Finish")
+        //const Ring = Map.findObject("Objects", obj => obj.name === "Pouvoir")
+        
+        //this.Ring1.create(Ring.x, Ring.y, 'ring').setDepth(0);
 
         this.actionnerI = this.physics.add.group({allowGravity: false,immovable: true})
         
@@ -223,6 +238,10 @@ export default class Niveau1 extends Phaser.Scene
    
        
         //---------------------------------------------------------------------- OVERLAP ----------------------------------------------------------------------
+        this.physics.add.overlap(this.player, this.villainI, this.hitEnnemy, null, this);
+        this.physics.add.overlap(this.player, this.villainII, this.hitEnnemy, null, this);
+        this.physics.add.overlap(this.player, this.villainIII, this.hitEnnemy, null, this);
+
    }
     //----------------------- UPDATE -------------------------------------------------------------------------------------------------------------------------
     update (t,dt)
@@ -330,7 +349,33 @@ export default class Niveau1 extends Phaser.Scene
       });
       }
     }
+
+    
   }
+
+  hitEnnemy(){
+		if (this.immunity){
+			this.vie -= 1;
+			this.immunity = false;
+
+			
+		}
+		if (this.vie == 2){
+			this.effect = this.time.addEvent({ delay : 200, repeat: 9, callback: function(){this.pdv3.visible = !this.pdv3.visible;}, callbackScope: this});
+			this.pdv3.destroy();
+      this.hp = this.add.image(135,35, "pdv2").setScrollFactor(0);
+
+		}
+		if (this.vie == 1){
+			this.effect = this.time.addEvent({ delay : 200, repeat: 9, callback: function(){this.pdv2.visible = !this.pdv2.visible;}, callbackScope: this});
+			this.pdv2.destroy();
+      this.hp = this.add.image(135,35, "pdv1").setScrollFactor(0);
+		}
+
+		if(this.vie == 0){
+			this.scene.start('game-over')
+		}
+	}
  //----------------------- FONCTIONS -------------------------------------------------------------------------------------------------------------------------
 
     
