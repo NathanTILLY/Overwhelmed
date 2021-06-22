@@ -35,8 +35,18 @@ export default class Niveau1 extends Phaser.Scene
         this.load.image('ville', 'assets/Background/Ville.png');
 
         this.load.image("villain", "./assets/Objects/villain.png");
+        this.load.image("corbeau", "./assets/Objects/corbeau.png");
         this.load.image("Tiles", "./assets/tiled/Tileset.png");
         this.load.tilemapTiledJSON("Map", "./assets/tiled/Niveau1.json");
+
+        this.load.image('pdv1', 'assets/Menu/vie1.png');
+        this.load.image('pdv2', 'assets/Menu/vie2.png');
+        this.load.image('pdv3', 'assets/Menu/vie3.png');
+        this.load.image('interface', 'assets/Menu/bandeauInterface.png');
+
+        this.load.image('ring', 'assets/Objects/ring.png');
+        this.load.image('bullet', 'assets/Objects/bullet.png');
+        this.load.image('shadow', 'assets/Objects/shadow.png');
 
         this.load.audio('Musique', 'assets/Audio/Virgule.ogg');
 
@@ -44,9 +54,17 @@ export default class Niveau1 extends Phaser.Scene
         
         //plateformes
         
+        var groupeBdn;
+        var boutonFeu;
+        var boule = false;
+        var boule_de_neige;
+        var vie = 3;
+        var invincibilite = false;
 
-
-        
+        var shadow = true;
+        var teleportation;
+        var boutonTp;
+        var bouttonAetePress = false;
     }
 
     //----------------------- CREATE -------------------------------------------------------------------------------------------------------------------------
@@ -75,8 +93,13 @@ export default class Niveau1 extends Phaser.Scene
        this.add.image(1200, 500, 'ville').setScrollFactor(0.30,1);
        var brume = this.add.image(1200, 100, 'brume').setScrollFactor(0.70,1);
 
-       brume.alpha = 0.20
-       ciel.alpha = 0.8
+       brume.alpha = 0.20;
+       ciel.alpha = 0.8;
+
+       //interface
+       this.hp = this.add.image(135,35, "pdv2").setScrollFactor(0);
+       var barre = this.add.image(449, 224, 'interface').setScrollFactor(0);
+       barre.alpha = 0.20;
 
      //---------------------------------------------------------------------- PLATEFORMES ----------------------------------------------------------------------
        //Setting the map
@@ -125,7 +148,7 @@ export default class Niveau1 extends Phaser.Scene
         this.villainII = this.physics.add.group({allowGravity: false,immovable: true});
         this.villainIII = this.physics.add.group({allowGravity: false,immovable: true});
         this.doll = this.physics.add.group({allowGravity: false,immovable: true});
-        this.doll2 = this.physics.add.group({allowGravity: false,immovable: true});
+
 
         const villain1 = Map.findObject("Objects", obj => obj.name === "Monstre 1");
         const villain2 = Map.findObject("Objects", obj => obj.name === "Monstre 2");
@@ -140,19 +163,44 @@ export default class Niveau1 extends Phaser.Scene
         this.physics.add.overlap(this.player.sprite, this.villainIII, this.hit, null,this);
 
 
-        this.dollsp = Map.findObject("Objects", obj => obj.name === "Vague Monstre 1");
-        this.dollsp2 = Map.findObject("Objects", obj => obj.name === "Vague Monstre 2");
+        this.corbeau = Map.findObject("Objects", obj => obj.name === "corbeau");
 
+        this.physics.add.overlap(this.player.sprite, this.corbeau, this.hit, null,this);
 
-        this.physics.add.overlap(this.player.sprite, this.doll, this.hit, null,this);
-        this.physics.add.overlap(this.player.sprite, this.doll2, this.hit, null,this);
+        var test = this;
+  
+        this.villainI.children.iterate(function (child) {
+			test.tweens.add({
+				targets: child,
+				x: child.x-172,
+				duration: 3000,
+        flipX : true,
+				yoyo: true,
+				loop: -1
+			});
+		})
 
-     //---------------------------------------------------------------------- PLAYER ----------------------------------------------------------------------
-       
-    
-     //---------------------------------------------------------------------- ENNEMI ----------------------------------------------------------------------
-       
- 
+        this.villainII.children.iterate(function (child) {
+			test.tweens.add({
+				targets: child,
+				x: child.x-172,
+				duration: 3000,
+        flipX : true,
+				yoyo: true,
+				loop: -1
+			});
+		})
+
+        this.villainIII.children.iterate(function (child) {
+			test.tweens.add({
+				targets: child,
+				x: child.x-172,
+				duration: 3000,
+        flipX : true,
+				yoyo: true,
+				loop: -1
+			});
+		})
        
 
        
@@ -163,12 +211,7 @@ export default class Niveau1 extends Phaser.Scene
         this.musique;  
         this.musique = this.sound.add('Musique')
 
-        //---------------------------------------------------------------------- ANIMS ----------------------------------------------------------------------   
-       
-       
-       // ----------------ennemi
-       
- 
+     
 
        
         //---------------------------------------------------------------------- Boule de neige ----------------------------------------------------------------------
@@ -184,12 +227,12 @@ export default class Niveau1 extends Phaser.Scene
     //----------------------- UPDATE -------------------------------------------------------------------------------------------------------------------------
     update (t,dt)
     {
-        this.musique.play({volume : 1, loop: true})
+        this.musique.play({volume : 0.4, loop: true})
         
         if (this.isPlayerDead) return;
 
         this.player.update();
-
+        this.musique.play({volume : 1, loop: true})
         //What the game should do if game's over
         if (
           this.player.sprite.y > this.groundLayer.height) 
@@ -225,10 +268,69 @@ export default class Niveau1 extends Phaser.Scene
           });
           }
         }
+
+        // ACTUALISATION DE LA VIE --------------------------------------------------
+    
+        if (this.vie == 3){
+            this.hp.setTexture("pdv3");
+            
+        }
+        else if (this.vie == 2){
+            this.hp.setTexture("pdv2" );
+            
+        }
         
+        else if (this.vie == 1){
+            this.hp.setTexture("pdv1");
+        }
         
+        else if (this.vie == 0){
+            this.add.image(960, 540, 'game_over').setScrollFactor(0);
+        }
+    
+        if(this.vie <= 0){
+            this.add.image(960, 540, 'game_over').setScrollFactor(0);
+            player.setTint(0xff0000);
+            player.anims.play('turn');//mettre une anime ou il tombe en avant
+            this.physics.pause();
+            gameOver = true;
+        }
     }
+
+    //What the game should do if player collides with an ennemy
+  hit(player,ennemy){
+    if (!this.immune){
+      this.isPlayerDead = true;
+
+      const cam = this.cameras.main;
+      cam.shake(100, 0.05);
+
+
+      // Add an effect on death
+      if(this.respawning){
+        this.score -= 200;
+        this.scoreText.setText('Score : ' + this.score);
+        this.player.sprite.setPosition(this.CheckPoint.x,this.CheckPoint.y-20);
+        this.isPlayerDead = false;
+      }
+      
+      else{
+
+        cam.fade(250, 0, 0, 0);
+
+        // Freeze the player
+        this.player.freeze();
+
+        cam.once("camerafadeoutcomplete", () => {
+          
+          this.musique.stop(); 
+          this.player.destroy();
+          this.scene.restart();
         
+      });
+      }
+    }
+  }
  //----------------------- FONCTIONS -------------------------------------------------------------------------------------------------------------------------
 
     
